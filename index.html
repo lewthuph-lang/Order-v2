@@ -77,7 +77,10 @@
 
     // --- API HELPER ---
     const useGoogleSheets = () => {
-      const [apiUrl, setApiUrl] = useState(localStorage.getItem('gas_api_url') || "");
+      // PRE-CONFIGURED URL
+      const DEFAULT_API_URL = "https://script.google.com/macros/s/AKfycbyAOTftyjQayWJoo_k7CAr-Dl3NdXrVCkT_YTQC8Hib90R6nHbAGxNoMukvdKN8_bwKxA/exec";
+      
+      const [apiUrl, setApiUrl] = useState(localStorage.getItem('gas_api_url') || DEFAULT_API_URL);
       const [loading, setLoading] = useState(false);
 
       const saveUrl = (url) => {
@@ -103,7 +106,7 @@
         } catch (err) {
           console.error(err);
           setLoading(false);
-          alert("Connection Error. Check your Internet or API URL.");
+          alert("Connection Error. Check your Internet.");
           return null;
         }
       };
@@ -153,7 +156,7 @@
       const { apiUrl, saveUrl, request, loading } = useGoogleSheets();
       const { deferredPrompt, installApp } = usePWAInstall();
       const [activeTab, setActiveTab] = useState('orders'); 
-      const [showConfig, setShowConfig] = useState(!apiUrl);
+      const [showConfig, setShowConfig] = useState(false); // Default to false since URL is hardcoded
       
       const [menuItems, setMenuItems] = useState([]);
       const [roster, setRoster] = useState([]); 
@@ -185,7 +188,7 @@
       };
 
       const renderContent = () => {
-        if (!apiUrl || showConfig) return <ConfigScreen currentUrl={apiUrl} onSave={(url) => { saveUrl(url); setShowConfig(false); }} />;
+        if (showConfig) return <ConfigScreen currentUrl={apiUrl} onSave={(url) => { saveUrl(url); setShowConfig(false); }} />;
         
         switch(activeTab) {
           case 'orders': return <OrdersView 
